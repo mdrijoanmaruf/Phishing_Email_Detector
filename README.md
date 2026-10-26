@@ -39,19 +39,9 @@ Phishing_Email_Detector/
 │
 ├── data/
 │   ├── data.csv             # Full dataset
-│   ├── sample_emails.csv    # ~200-row balanced sample for demo
 │   ├── model.json           # Trained Naïve Bayes weights
 │   ├── history.json         # Scan history log
-│   └── blacklist.json       # Blacklisted sender domains
-│
-├── tests/
-│   ├── test_email_record.py
-│   ├── test_validators.py
-│   ├── test_detector.py
-│   └── test_manager.py
-│
-├── screenshots/             # 8 required screenshots (Day 19)
-└── report/                  # Final PDF report
+│   └── blacklist.json       # Blacklisted sender domains 
 ```
 
 ---
