@@ -1,5 +1,29 @@
 [
   {
+    "id": "act-eddfe2b7",
+    "timestamp": "2026-11-01T03:06:54.631712",
+    "action": "BLACKLIST_ADD",
+    "entity_type": "BLACKLIST",
+    "entity_id": "iworld.de",
+    "summary": "Added domain 'iworld.de' to blacklisted domains",
+    "details": {
+      "domain": "iworld.de"
+    },
+    "actor": "Administrator"
+  },
+  {
+    "id": "act-ad6321d9",
+    "timestamp": "2026-11-01T03:06:04.130981",
+    "action": "BLACKLIST_ADD",
+    "entity_type": "BLACKLIST",
+    "entity_id": "malicious-phish-domain.com",
+    "summary": "Added domain 'malicious-phish-domain.com' to blacklisted domains",
+    "details": {
+      "domain": "malicious-phish-domain.com"
+    },
+    "actor": "Administrator"
+  },
+  {
     "id": "act-8d227919",
     "timestamp": "2026-11-01T02:57:48.078417",
     "action": "DELETE",
