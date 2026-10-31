@@ -112,7 +112,12 @@ class HistoryService:
 
         if action and action.strip().upper() != "ALL":
             a_upper = action.strip().upper()
-            results = [r for r in results if r.get("action", "").upper() == a_upper]
+            results = [
+                r for r in results
+                if r.get("action", "").upper() == a_upper
+                or a_upper in r.get("action", "").upper()
+                or r.get("entity_type", "").upper() == a_upper
+            ]
 
         if entity_type and entity_type.strip().upper() != "ALL":
             e_upper = entity_type.strip().upper()
