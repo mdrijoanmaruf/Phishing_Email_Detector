@@ -68,6 +68,16 @@ class DatasetService:
         self._ids = id_set
         self._is_loaded = True
 
+    @property
+    def df(self) -> pd.DataFrame:
+        """Return pandas DataFrame representation of in-memory records."""
+        if not hasattr(self, "_cached_df") or self._cached_df is None or len(self._cached_df) != len(self._records):
+            if self._records:
+                self._cached_df = pd.DataFrame([r.to_dict() for r in self._records])
+            else:
+                self._cached_df = pd.DataFrame()
+        return self._cached_df
+
     def get_total_count(self) -> int:
         return self.TOTAL_DATASET_COUNT
 
