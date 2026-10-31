@@ -1,1 +1,71 @@
-[]
+[
+  {
+    "id": "act-8d227919",
+    "timestamp": "2026-11-01T02:57:48.078417",
+    "action": "DELETE",
+    "entity_type": "EMAIL",
+    "entity_id": "71001",
+    "summary": "Deleted email record #71001",
+    "details": {
+      "deleted_id": "71001"
+    },
+    "actor": "Administrator"
+  },
+  {
+    "id": "act-b130304b",
+    "timestamp": "2026-11-01T02:57:40.162920",
+    "action": "BLACKLIST_ADD",
+    "entity_type": "BLACKLIST",
+    "entity_id": "fraudulent-bank-alert.xyz",
+    "summary": "Added domain 'fraudulent-bank-alert.xyz' to blacklisted domains",
+    "details": {
+      "domain": "fraudulent-bank-alert.xyz"
+    },
+    "actor": "Administrator"
+  },
+  {
+    "id": "act-47343064",
+    "timestamp": "2026-11-01T02:57:40.158916",
+    "action": "EDIT",
+    "entity_type": "EMAIL",
+    "entity_id": "71001",
+    "summary": "Updated email record #71001 ('CSC 4162 Python Project Feedback - Outstanding Wor')",
+    "details": {
+      "subject": "CSC 4162 Python Project Feedback - Outstanding Work"
+    },
+    "actor": "Administrator"
+  },
+  {
+    "id": "act-a8cf7dbe",
+    "timestamp": "2026-11-01T02:57:40.150842",
+    "action": "ADD",
+    "entity_type": "EMAIL",
+    "entity_id": "71001",
+    "summary": "Added new Safe email record #71001 from 'Dr. Alexander <alex@seewald.at>'",
+    "details": {
+      "id": "71001",
+      "sender": "Dr. Alexander <alex@seewald.at>",
+      "receiver": "",
+      "subject": "CSC 4162 Python Project Feedback",
+      "body": "Great job implementing the pure Python rules and history logging.",
+      "label": 0,
+      "label_text": "Safe",
+      "date": "Just now",
+      "urls": [],
+      "domain": "seewald.at"
+    },
+    "actor": "Administrator"
+  },
+  {
+    "id": "act-9789cc02",
+    "timestamp": "2026-11-01T02:57:02.295645",
+    "action": "ADD",
+    "entity_type": "EMAIL",
+    "entity_id": "999",
+    "summary": "Added test email record #999",
+    "details": {
+      "sender": "test@example.com"
+    },
+    "actor": "Administrator"
+  }
+]

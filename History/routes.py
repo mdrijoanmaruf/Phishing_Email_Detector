@@ -1,51 +1,80 @@
 """
 Phishing_Email_Detector_Server/History/routes.py
-Flask blueprint for scan history endpoints.
+Flask blueprint for activity history and audit logs.
 """
 
 from flask import Blueprint, jsonify, request
-from .history_service import HistoryService
+from .history_service import history_service
 
 history_bp = Blueprint("history_bp", __name__, url_prefix="/api/history")
-history_service = HistoryService()
 
 
 @history_bp.route("", methods=["GET"])
 def get_history():
-    """Retrieve past email scans with optional verdict filter and limit."""
-    verdict = request.args.get("verdict")
-    limit = request.args.get("limit", default=100, type=int)
+    """Retrieve activity history with optional action and entity_type filters."""
+    action = request.args.get("action")
+    entity_type = request.args.get("entity_type")
+    limit = request.args.get("limit", default=200, type=int)
 
-    scans = history_service.get_all(verdict=verdict, limit=limit)
+    logs = history_service.get_all(action=action, entity_type=entity_type, limit=limit)
     return jsonify({
         "success": True,
-        "count": len(scans),
+        "count": len(logs),
         "total": history_service.count(),
-        "data": scans
+        "data": logs
     }), 200
 
 
-@history_bp.route("/<string:scan_id>", methods=["DELETE"])
-def delete_history_item(scan_id: str):
-    """Delete a single scan history record."""
-    deleted = history_service.delete(scan_id)
-    if not deleted:
-        return jsonify({"success": False, "error": f"Scan with ID '{scan_id}' not found"}), 404
+@history_bp.route("/log", methods=["POST"])
+def create_history_log():
+    """
+    Log an activity event (e.g., VIEW, ADD, EDIT, DELETE).
+    Payload: { action, entity_type, entity_id, summary, details, actor }
+    """
+    data = request.get_json(silent=True) or {}
+    action = data.get("action", "VIEW").upper()
+    entity_type = data.get("entity_type", "EMAIL").upper()
+    entity_id = str(data.get("entity_id", ""))
+    summary = data.get("summary") or f"{action} action on {entity_type} {entity_id}"
+    details = data.get("details", {})
+    actor = data.get("actor", "Administrator")
+
+    entry = history_service.log_action(
+        action=action,
+        entity_type=entity_type,
+        entity_id=entity_id,
+        summary=summary,
+        details=details,
+        actor=actor
+    )
 
     return jsonify({
         "success": True,
-        "message": f"Scan '{scan_id}' deleted successfully",
+        "message": "Activity logged successfully",
+        "data": entry
+    }), 201
+
+
+@history_bp.route("/<string:log_id>", methods=["DELETE"])
+def delete_history_item(log_id: str):
+    """Delete a single history record."""
+    deleted = history_service.delete(log_id)
+    if not deleted:
+        return jsonify({"success": False, "error": f"History record with ID '{log_id}' not found"}), 404
+
+    return jsonify({
+        "success": True,
+        "message": f"History record '{log_id}' deleted successfully",
         "count": history_service.count()
     }), 200
 
 
 @history_bp.route("", methods=["DELETE"])
 def clear_all_history():
-    """Clear all scan history."""
+    """Clear all history records."""
     history_service.clear_all()
     return jsonify({
         "success": True,
-        "message": "All scan history cleared successfully",
+        "message": "All activity history cleared successfully",
         "count": 0
     }), 200
-

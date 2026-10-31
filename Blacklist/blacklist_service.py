@@ -8,6 +8,7 @@ import os
 import json
 import re
 from typing import List, Set
+from History.history_service import history_service
 
 
 class BlacklistService:
@@ -130,6 +131,17 @@ class BlacklistService:
 
         self._domains.add(cleaned)
         self._save()
+
+        # Audit history log
+        history_service.log_action(
+            action="BLACKLIST_ADD",
+            entity_type="BLACKLIST",
+            entity_id=cleaned,
+            summary=f"Added domain '{cleaned}' to blacklisted domains",
+            details={"domain": cleaned},
+            actor="Administrator"
+        )
+
         return True, f"Domain '{cleaned}' successfully blacklisted."
 
     def remove(self, domain_input: str) -> tuple[bool, str]:
@@ -146,6 +158,17 @@ class BlacklistService:
 
         self._domains.discard(cleaned)
         self._save()
+
+        # Audit history log
+        history_service.log_action(
+            action="BLACKLIST_REMOVE",
+            entity_type="BLACKLIST",
+            entity_id=cleaned,
+            summary=f"Removed domain '{cleaned}' from blacklisted domains",
+            details={"domain": cleaned},
+            actor="Administrator"
+        )
+
         return True, f"Domain '{cleaned}' removed from blacklist."
 
     def count(self) -> int:

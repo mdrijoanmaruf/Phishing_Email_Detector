@@ -10,6 +10,7 @@ from typing import Dict, Any, List, Optional, Tuple
 import pandas as pd
 
 from Dataset.email_record import EmailRecord
+from History.history_service import history_service
 
 
 class DatasetService:
@@ -241,6 +242,16 @@ class DatasetService:
         self._records.insert(0, new_record)
         self._ids.add(rec_id)
 
+        # Audit history log
+        history_service.log_action(
+            action="ADD",
+            entity_type="EMAIL",
+            entity_id=rec_id,
+            summary=f"Added new {'Phishing' if label == 1 else 'Safe'} email record #{rec_id} from '{sender}'",
+            details=new_record.to_dict(),
+            actor="Administrator"
+        )
+
         return True, "Email record created successfully", new_record
 
     def update_record(self, record_id: str, data: Dict[str, Any]) -> Tuple[bool, str, Optional[EmailRecord]]:
@@ -280,6 +291,16 @@ class DatasetService:
         if "date" in data:
             target_record.date = str(data["date"])
 
+        # Audit history log
+        history_service.log_action(
+            action="EDIT",
+            entity_type="EMAIL",
+            entity_id=record_id,
+            summary=f"Updated email record #{record_id} ('{target_record.subject[:50]}')",
+            details=data,
+            actor="Administrator"
+        )
+
         return True, "Email record updated successfully", target_record
 
     def delete_record(self, record_id: str) -> Tuple[bool, str]:
@@ -292,6 +313,16 @@ class DatasetService:
 
         self._records = [r for r in self._records if r.id != rec_id_str]
         self._ids.discard(rec_id_str)
+
+        # Audit history log
+        history_service.log_action(
+            action="DELETE",
+            entity_type="EMAIL",
+            entity_id=rec_id_str,
+            summary=f"Deleted email record #{rec_id_str}",
+            details={"deleted_id": rec_id_str},
+            actor="Administrator"
+        )
 
         return True, "Email record deleted successfully"
 
