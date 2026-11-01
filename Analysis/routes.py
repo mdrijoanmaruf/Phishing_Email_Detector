@@ -1,7 +1,4 @@
-"""
-Phishing_Email_Detector_Server/Analysis/routes.py
-Flask blueprint for statistical analytics endpoints.
-"""
+
 
 from flask import Blueprint, jsonify
 from .analytics_service import AnalyticsService

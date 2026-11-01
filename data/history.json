@@ -1,5 +1,17 @@
 [
   {
+    "id": "act-adafd118",
+    "timestamp": "2026-11-01T03:14:36.998738",
+    "action": "BLACKLIST_ADD",
+    "entity_type": "BLACKLIST",
+    "entity_id": "facebok.com",
+    "summary": "Added domain 'facebok.com' to blacklisted domains",
+    "details": {
+      "domain": "facebok.com"
+    },
+    "actor": "Administrator"
+  },
+  {
     "id": "act-eddfe2b7",
     "timestamp": "2026-11-01T03:06:54.631712",
     "action": "BLACKLIST_ADD",
