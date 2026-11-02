@@ -1,5 +1,17 @@
 [
   {
+    "id": "act-9445dfa8",
+    "timestamp": "2026-11-03T04:00:48.333043",
+    "action": "BLACKLIST_ADD",
+    "entity_type": "BLACKLIST",
+    "entity_id": "insta.com",
+    "summary": "Added domain 'insta.com' to blacklisted domains",
+    "details": {
+      "domain": "insta.com"
+    },
+    "actor": "Administrator"
+  },
+  {
     "id": "act-d71d882c",
     "timestamp": "2026-11-01T18:01:26.375642",
     "action": "DELETE",
