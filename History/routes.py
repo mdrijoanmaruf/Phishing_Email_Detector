@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from .history_service import history_service
+from History.history_service import history_service
 
 # Blueprint Definition
 history_bp = Blueprint("history_bp", __name__, url_prefix="/api/history")

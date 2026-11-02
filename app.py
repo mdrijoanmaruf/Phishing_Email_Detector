@@ -15,20 +15,17 @@ from History.routes import history_bp
 from Analysis.routes import analytics_bp
 
 
-# Flask Application Factory
+# Flask Application 
 def create_app():
     app = Flask(__name__)
 
-    # CORS Configuration
     CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-    # Blueprint Registration
     app.register_blueprint(dataset_bp)
     app.register_blueprint(blacklist_bp)
     app.register_blueprint(history_bp)
     app.register_blueprint(analytics_bp)
 
-    # Root & Error Handlers
     @app.route("/", methods=["GET"])
     def index():
         return jsonify({

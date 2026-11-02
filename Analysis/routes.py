@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from .analytics_service import AnalyticsService
+from Analysis.analytics_service import AnalyticsService
 
 # Blueprint Definition
 analytics_bp = Blueprint("analytics_bp", __name__, url_prefix="/api/analytics")

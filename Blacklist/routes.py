@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from .blacklist_service import BlacklistService
+from Blacklist.blacklist_service import BlacklistService
 
 # Blueprint Definition
 blacklist_bp = Blueprint("blacklist_bp", __name__, url_prefix="/api/blacklist")
