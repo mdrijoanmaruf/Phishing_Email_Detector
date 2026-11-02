@@ -19,7 +19,25 @@ from Analysis.routes import analytics_bp
 def create_app():
     app = Flask(__name__)
 
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    # Allowed Origins (Production & Localhost)
+    allowed_origins = [
+        "https://phish.rijoan.com",
+        "http://phish.rijoan.com",
+        "https://phish.rijoan.com/",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+    ]
+
+    # CORS Configuration
+    CORS(
+        app,
+        resources={r"/*": {"origins": allowed_origins}},
+        supports_credentials=True,
+        allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    )
 
     app.register_blueprint(dataset_bp)
     app.register_blueprint(blacklist_bp)
@@ -67,11 +85,12 @@ def create_app():
 app = create_app()
 
 if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
     print("=" * 60)
-    print("  PhishGuard API Server running at http://127.0.0.1:5000")
-    print("  Dataset API:   http://127.0.0.1:5000/api/dataset")
-    print("  Blacklist API: http://127.0.0.1:5000/api/blacklist")
-    print("  History API:   http://127.0.0.1:5000/api/history")
-    print("  Analytics API: http://127.0.0.1:5000/api/analytics/summary")
+    print(f"  PhishGuard API Server running at http://127.0.0.1:{port}")
+    print(f"  Dataset API:   http://127.0.0.1:{port}/api/dataset")
+    print(f"  Blacklist API: http://127.0.0.1:{port}/api/blacklist")
+    print(f"  History API:   http://127.0.0.1:{port}/api/history")
+    print(f"  Analytics API: http://127.0.0.1:{port}/api/analytics/summary")
     print("=" * 60)
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=port, debug=False)
