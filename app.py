@@ -1,7 +1,5 @@
 import sys
 import os
-
-# Environment Path Setup
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
@@ -14,12 +12,8 @@ from Blacklist.routes import blacklist_bp
 from History.routes import history_bp
 from Analysis.routes import analytics_bp
 
-
-# Flask Application 
 def create_app():
     app = Flask(__name__)
-
-    # Allowed Origins (Production & Localhost)
     allowed_origins = [
         "https://phish.rijoan.com",
         "http://phish.rijoan.com",
@@ -30,7 +24,6 @@ def create_app():
         "http://127.0.0.1:3001",
     ]
 
-    # CORS Configuration
     CORS(
         app,
         resources={r"/*": {"origins": allowed_origins}},
@@ -80,8 +73,6 @@ def create_app():
 
     return app
 
-
-# Server Startup
 app = create_app()
 
 if __name__ == "__main__":
