@@ -1,20 +1,18 @@
 import re
-from typing import Any, Dict, List, Optional
 
 
+# Email Record Model
 class EmailRecord:
-    """Represents a single email record in the dataset."""
-
     def __init__(
         self,
-        record_id: str,
-        sender: str,
-        subject: str,
-        body: str,
-        label: int,
-        date: Optional[str] = None,
-        receiver: Optional[str] = None,
-        urls: Optional[Any] = None,
+        record_id,
+        sender,
+        subject,
+        body,
+        label,
+        date=None,
+        receiver=None,
+        urls=None,
     ):
         self.id = str(record_id)
         self.sender = str(sender) if sender is not None else ""
@@ -26,13 +24,12 @@ class EmailRecord:
         self.urls = self._parse_urls(urls)
         self.domain = self.get_domain()
 
-    def _parse_urls(self, urls: Any) -> List[str]:
-        """Normalize urls into a list of strings."""
+    # Extraction Helpers
+    def _parse_urls(self, urls):
         if urls is None:
             return []
         if isinstance(urls, list):
             return [str(u) for u in urls]
-        # In data.csv, urls might be an integer count or comma-separated string
         if isinstance(urls, (int, float)):
             return []
         if isinstance(urls, str):
@@ -43,18 +40,16 @@ class EmailRecord:
             return [urls_str] if urls_str else []
         return []
 
-    def get_domain(self) -> str:
-        """Extract sender domain using regular expression."""
+    def get_domain(self):
         if not self.sender:
             return "unknown"
         match = re.search(r"@([a-zA-Z0-9.\-]+)", self.sender)
         if match:
-            # Strip trailing punctuation or brackets
             return match.group(1).strip(">").strip(")").lower()
         return "unknown"
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert EmailRecord to a plain Python dictionary for JSON serialization."""
+    # Serialization
+    def to_dict(self):
         return {
             "id": self.id,
             "sender": self.sender,
@@ -69,8 +64,7 @@ class EmailRecord:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "EmailRecord":
-        """Instantiate an EmailRecord from a dictionary."""
+    def from_dict(cls, data):
         return cls(
             record_id=data.get("id", ""),
             sender=data.get("sender", ""),
@@ -82,8 +76,8 @@ class EmailRecord:
             urls=data.get("urls", []),
         )
 
-    def __str__(self) -> str:
+    def __str__(self):
         return f"[EmailRecord #{self.id}] Sender: {self.sender} | Domain: {self.domain} | Label: {self.label}"
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         return f"EmailRecord(id={self.id!r}, sender={self.sender!r}, label={self.label!r})"

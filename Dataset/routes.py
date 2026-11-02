@@ -1,30 +1,12 @@
-"""
-Dataset/routes.py
-Flask Blueprint defining all Dataset API endpoints:
-- GET    /api/dataset
-- GET    /api/dataset/search
-- POST   /api/dataset
-- PUT    /api/dataset/<id>
-- DELETE /api/dataset/<id>
-- GET    /api/dataset/export
-"""
-
 from flask import Blueprint, request, jsonify, Response
 from Dataset.dataset_service import dataset_service
 
 dataset_bp = Blueprint("dataset_bp", __name__)
 
 
+# Read & Search Routes
 @dataset_bp.route("/api/dataset", methods=["GET"])
 def get_dataset():
-    """
-    GET /api/dataset
-    Return all email records (or paginated).
-    Query Parameters:
-      - page (int, optional): Page number, default 1
-      - per_page (int, optional): Items per page, default 20 (max 200)
-      - all (str, optional): If 'true', returns all records without pagination
-    """
     try:
         all_param = request.args.get("all", "false").lower()
         return_all = all_param in ("true", "1", "yes")
@@ -57,10 +39,6 @@ def get_dataset():
 
 @dataset_bp.route("/api/dataset/search", methods=["GET"])
 def search_dataset():
-    """
-    GET /api/dataset/search?q=&label=&domain=&page=&per_page=
-    Filter records using keyword query, label filter, and domain filter.
-    """
     try:
         query = request.args.get("q", "").strip() or None
         domain = request.args.get("domain", "").strip() or None
@@ -98,13 +76,9 @@ def search_dataset():
         }), 500
 
 
+# Mutation Routes (CRUD)
 @dataset_bp.route("/api/dataset", methods=["POST"])
 def add_dataset_record():
-    """
-    POST /api/dataset
-    Add a new email record to the dataset.
-    JSON payload: { sender, subject, body, label, (optional) id, date }
-    """
     try:
         data = request.get_json(silent=True)
         if not data or not isinstance(data, dict):
@@ -138,10 +112,6 @@ def add_dataset_record():
 
 @dataset_bp.route("/api/dataset/<record_id>", methods=["PUT"])
 def update_dataset_record(record_id):
-    """
-    PUT /api/dataset/<id>
-    Update an existing record in the dataset.
-    """
     try:
         data = request.get_json(silent=True)
         if not data or not isinstance(data, dict):
@@ -174,10 +144,6 @@ def update_dataset_record(record_id):
 
 @dataset_bp.route("/api/dataset/<record_id>", methods=["DELETE"])
 def delete_dataset_record(record_id):
-    """
-    DELETE /api/dataset/<id>
-    Delete an existing record from the dataset.
-    """
     try:
         success, message = dataset_service.delete_record(record_id)
 
@@ -201,12 +167,9 @@ def delete_dataset_record(record_id):
         }), 500
 
 
+# Export Route
 @dataset_bp.route("/api/dataset/export", methods=["GET"])
 def export_dataset_csv():
-    """
-    GET /api/dataset/export
-    Download filtered or complete dataset as a CSV file.
-    """
     try:
         query = request.args.get("q", "").strip() or None
         domain = request.args.get("domain", "").strip() or None

@@ -1,5 +1,50 @@
 [
   {
+    "id": "act-d71d882c",
+    "timestamp": "2026-11-01T18:01:26.375642",
+    "action": "DELETE",
+    "entity_type": "EMAIL",
+    "entity_id": "71001",
+    "summary": "Deleted email record #71001",
+    "details": {
+      "deleted_id": "71001"
+    },
+    "actor": "Administrator"
+  },
+  {
+    "id": "act-02f7c96c",
+    "timestamp": "2026-11-01T18:01:26.373674",
+    "action": "EDIT",
+    "entity_type": "EMAIL",
+    "entity_id": "71001",
+    "summary": "Updated email record #71001 ('Updated')",
+    "details": {
+      "subject": "Updated"
+    },
+    "actor": "Administrator"
+  },
+  {
+    "id": "act-4ff7eab9",
+    "timestamp": "2026-11-01T18:01:26.372737",
+    "action": "ADD",
+    "entity_type": "EMAIL",
+    "entity_id": "71001",
+    "summary": "Added new Phishing email record #71001 from 'test@fake.com'",
+    "details": {
+      "id": "71001",
+      "sender": "test@fake.com",
+      "receiver": "",
+      "subject": "Test",
+      "body": "Click here",
+      "label": 1,
+      "label_text": "Phishing",
+      "date": "Just now",
+      "urls": [],
+      "domain": "fake.com"
+    },
+    "actor": "Administrator"
+  },
+  {
     "id": "act-adafd118",
     "timestamp": "2026-11-01T03:14:36.998738",
     "action": "BLACKLIST_ADD",

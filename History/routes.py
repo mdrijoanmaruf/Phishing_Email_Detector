@@ -1,17 +1,13 @@
-"""
-Phishing_Email_Detector_Server/History/routes.py
-Flask blueprint for activity history and audit logs.
-"""
-
 from flask import Blueprint, jsonify, request
 from .history_service import history_service
 
+# Blueprint Definition
 history_bp = Blueprint("history_bp", __name__, url_prefix="/api/history")
 
 
+# History Routes
 @history_bp.route("", methods=["GET"])
 def get_history():
-    """Retrieve activity history with optional action and entity_type filters."""
     action = request.args.get("action")
     entity_type = request.args.get("entity_type")
     limit = request.args.get("limit", default=200, type=int)
@@ -27,10 +23,6 @@ def get_history():
 
 @history_bp.route("/log", methods=["POST"])
 def create_history_log():
-    """
-    Log an activity event (e.g., VIEW, ADD, EDIT, DELETE).
-    Payload: { action, entity_type, entity_id, summary, details, actor }
-    """
     data = request.get_json(silent=True) or {}
     action = data.get("action", "VIEW").upper()
     entity_type = data.get("entity_type", "EMAIL").upper()
@@ -56,8 +48,7 @@ def create_history_log():
 
 
 @history_bp.route("/<string:log_id>", methods=["DELETE"])
-def delete_history_item(log_id: str):
-    """Delete a single history record."""
+def delete_history_item(log_id):
     deleted = history_service.delete(log_id)
     if not deleted:
         return jsonify({"success": False, "error": f"History record with ID '{log_id}' not found"}), 404
@@ -71,7 +62,6 @@ def delete_history_item(log_id: str):
 
 @history_bp.route("", methods=["DELETE"])
 def clear_all_history():
-    """Clear all history records."""
     history_service.clear_all()
     return jsonify({
         "success": True,

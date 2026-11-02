@@ -1,23 +1,14 @@
-"""
-Phishing_Email_Detector_Server/Analysis/analytics_service.py
-Statistical and aggregative analytics engine.
-Prominently leverages NumPy for statistical distributions and pandas for grouped summaries.
-"""
-
 import numpy as np
 import pandas as pd
-from typing import Dict, Any, List, Set
 
 from Dataset.dataset_service import DatasetService
 from Blacklist.blacklist_service import BlacklistService
 from History.history_service import HistoryService
 
 
+# Analytics Service Layer
 class AnalyticsService:
-    """Computes dataset and scan statistics using NumPy and pandas."""
-
-    # Set of common phishing indicator tokens for frequency analysis
-    SUSPICIOUS_KEYWORDS: Set[str] = {
+    SUSPICIOUS_KEYWORDS = {
         "verify", "verification", "account", "suspended", "security",
         "password", "urgent", "update", "banking", "billing",
         "confirm", "confirmation", "login", "identity", "unauthorized",
@@ -32,25 +23,21 @@ class AnalyticsService:
 
     def __init__(
         self,
-        dataset_service: DatasetService = None,
-        blacklist_service: BlacklistService = None,
-        history_service: HistoryService = None,
+        dataset_service=None,
+        blacklist_service=None,
+        history_service=None,
     ):
         self.dataset_svc = dataset_service or DatasetService()
         self.blacklist_svc = blacklist_service or BlacklistService()
         self.history_svc = history_service or HistoryService()
 
-    def get_summary(self) -> Dict[str, Any]:
-        """
-        Aggregate high-level metric counts across the entire platform.
-        Uses calibrated 71,000 dataset scale.
-        """
+    # High-Level Metric Summaries
+    def get_summary(self):
         raw_df = self.dataset_svc.df
         raw_total = len(raw_df)
         total_records = getattr(self.dataset_svc, "TOTAL_DATASET_COUNT", 71000)
 
         if raw_total > 0 and "label" in raw_df.columns:
-            # Calculate raw proportions
             phishing_raw = int((raw_df["label"] == 1).sum())
             safe_raw = int((raw_df["label"] == 0).sum())
             ratio = phishing_raw / raw_total if raw_total > 0 else 0.55
@@ -64,7 +51,6 @@ class AnalyticsService:
         scans_count = self.history_svc.count()
         blacklist_count = self.blacklist_svc.count()
 
-        # History verdicts count
         history_records = self.history_svc.get_all(limit=500)
         history_safe = sum(1 for r in history_records if r.get("verdict") == "SAFE")
         history_suspicious = sum(1 for r in history_records if r.get("verdict") == "SUSPICIOUS")
@@ -84,22 +70,12 @@ class AnalyticsService:
             }
         }
 
-    def get_scores_statistics(self) -> Dict[str, Any]:
-        """
-        Compute statistical parameters on email risk scores using NumPy:
-        - Mean
-        - Standard Deviation
-        - Median (50th percentile)
-        - 25th and 75th percentiles (IQR)
-        - 10-bin histogram distribution
-        """
+    # Statistical Score Distributions (NumPy)
+    def get_scores_statistics(self):
         history_records = self.history_svc.get_all(limit=500)
         scores_list = [r.get("score", 0) for r in history_records]
 
-        # If few or no scans, simulate realistic distribution using baseline dataset sampling
         if len(scores_list) < 10:
-            # Create synthetic scores representative of real corpus distribution
-            # 55% phishing (scores ~ 65-95), 45% safe (scores ~ 5-30)
             np.random.seed(42)
             phish_scores = np.random.normal(loc=76, scale=12, size=550)
             safe_scores = np.random.normal(loc=18, scale=9, size=450)
@@ -111,7 +87,6 @@ class AnalyticsService:
         else:
             scores_array = np.clip(np.array(scores_list, dtype=float), 0, 100)
 
-        # NumPy statistical computations
         mean_val = float(np.mean(scores_array))
         std_val = float(np.std(scores_array))
         median_val = float(np.median(scores_array))
@@ -120,7 +95,6 @@ class AnalyticsService:
         min_val = float(np.min(scores_array))
         max_val = float(np.max(scores_array))
 
-        # 10-bin histogram using NumPy
         bin_edges = np.linspace(0, 100, 11)
         counts, edges = np.histogram(scores_array, bins=bin_edges)
 
@@ -146,16 +120,12 @@ class AnalyticsService:
             "histogram": histogram_data
         }
 
-    def get_top_keywords(self, top_n: int = 12) -> List[Dict[str, Any]]:
-        """
-        Analyze keyword frequency across dataset and scan history.
-        Counts suspicious token occurrences.
-        """
+    # Keyword Frequency Analysis
+    def get_top_keywords(self, top_n=12):
         raw_df = self.dataset_svc.df
-        freq_dict: Dict[str, int] = {}
+        freq_dict = {}
 
         if not raw_df.empty and "body" in raw_df.columns:
-            # Sample 2000 phishing rows for quick and responsive computation
             phish_sample = raw_df[raw_df["label"] == 1].head(2000)
             sample_text = " ".join(phish_sample["subject"].fillna("").astype(str) + " " + phish_sample["body"].fillna("").astype(str)).lower()
 
@@ -164,12 +134,10 @@ class AnalyticsService:
                 if count > 0:
                     freq_dict[kw] = count
 
-        # Also count from scan history
         for r in self.history_svc.get_all(limit=500):
             for kw in r.get("keywords_found", []):
                 freq_dict[kw] = freq_dict.get(kw, 0) + 15
 
-        # Fallback baseline counts if dataset text was empty
         if not freq_dict:
             freq_dict = {
                 "account": 1845,
@@ -186,7 +154,6 @@ class AnalyticsService:
                 "unauthorized": 490,
             }
 
-        # Sort by frequency descending using tuples
         sorted_pairs = sorted(freq_dict.items(), key=lambda item: item[1], reverse=True)[:top_n]
         total_matches = sum(count for _, count in sorted_pairs) or 1
 
@@ -199,14 +166,11 @@ class AnalyticsService:
             for kw, count in sorted_pairs
         ]
 
-    def get_domain_breakdown(self, top_n: int = 10) -> List[Dict[str, Any]]:
-        """
-        Group by sender domain to identify top phishing origins using pandas.
-        """
+    # Origin Domain Breakdown
+    def get_domain_breakdown(self, top_n=10):
         raw_df = self.dataset_svc.df
 
         if not raw_df.empty and "sender" in raw_df.columns:
-            # Extract domain using pandas str extract
             phish_df = raw_df[raw_df["label"] == 1].copy()
             phish_df["domain"] = phish_df["sender"].str.extract(r"@([\w\.-]+\.[a-zA-Z]{2,})", expand=False).str.lower()
             domain_counts = phish_df["domain"].dropna().value_counts().head(top_n)
@@ -218,7 +182,6 @@ class AnalyticsService:
             if result:
                 return result
 
-        # Default fallback domains if sender column lacks domain formatting
         return [
             {"domain": "secure-bank-update.com", "phishing_count": 342},
             {"domain": "account-alert-service.xyz", "phishing_count": 289},

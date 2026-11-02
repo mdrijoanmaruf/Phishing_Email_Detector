@@ -1,13 +1,7 @@
-"""
-Phishing_Email_Detector_Server/app.py
-Main Flask application entry point.
-Registers all page blueprints and configures CORS.
-"""
-
 import sys
 import os
 
-# Ensure the server directory is on sys.path
+# Environment Path Setup
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
@@ -21,19 +15,20 @@ from History.routes import history_bp
 from Analysis.routes import analytics_bp
 
 
+# Flask Application Factory
 def create_app():
-    """Application factory for PhishGuard Flask server."""
     app = Flask(__name__)
 
-    # Enable Cross-Origin Resource Sharing for the Next.js client
+    # CORS Configuration
     CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-    # Register blueprints
+    # Blueprint Registration
     app.register_blueprint(dataset_bp)
     app.register_blueprint(blacklist_bp)
     app.register_blueprint(history_bp)
     app.register_blueprint(analytics_bp)
 
+    # Root & Error Handlers
     @app.route("/", methods=["GET"])
     def index():
         return jsonify({
@@ -71,6 +66,7 @@ def create_app():
     return app
 
 
+# Server Startup
 app = create_app()
 
 if __name__ == "__main__":

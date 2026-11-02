@@ -1,18 +1,14 @@
-"""
-Phishing_Email_Detector_Server/Blacklist/routes.py
-Flask blueprint for domain blacklist endpoints.
-"""
-
 from flask import Blueprint, jsonify, request
 from .blacklist_service import BlacklistService
 
+# Blueprint Definition
 blacklist_bp = Blueprint("blacklist_bp", __name__, url_prefix="/api/blacklist")
 blacklist_service = BlacklistService()
 
 
+# Blacklist Routes
 @blacklist_bp.route("", methods=["GET"])
 def get_blacklist():
-    """List all blacklisted domains."""
     domains = blacklist_service.get_all()
     return jsonify({
         "success": True,
@@ -23,7 +19,6 @@ def get_blacklist():
 
 @blacklist_bp.route("", methods=["POST"])
 def add_to_blacklist():
-    """Add a domain or sender address to the blacklist."""
     data = request.get_json(silent=True) or {}
     domain = data.get("domain", "").strip()
 
@@ -43,8 +38,7 @@ def add_to_blacklist():
 
 
 @blacklist_bp.route("/<path:domain>", methods=["DELETE"])
-def remove_from_blacklist(domain: str):
-    """Remove a domain from the blacklist."""
+def remove_from_blacklist(domain):
     if not domain:
         return jsonify({"success": False, "error": "Domain parameter required"}), 400
 
@@ -57,4 +51,3 @@ def remove_from_blacklist(domain: str):
         "message": message,
         "count": blacklist_service.count()
     }), 200
-
